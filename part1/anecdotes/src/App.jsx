@@ -24,6 +24,7 @@ const App = () => {
     console.log(copy)
     getMostVoted(copy)
   }
+
   const handleSelected = () =>{
     setSelected(getRandom())
   }
@@ -41,7 +42,7 @@ const App = () => {
       <p>Votes: {votes[selected]}</p>
       
       <button onClick = {handleVote}>Vote</button>
-      <button onClick = {handleSelected}>Next Anecdote</button>
+      <button nodeonClick = {handleSelected}>Next Anecdote</button>
 
       <h1>Most voted anecdote</h1>
       <p>A wise man once said: {anecdotes[mostVoted]}</p>
