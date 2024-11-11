@@ -1,17 +1,27 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import service from "./services/service";
 
-const Person = ({ person }) => {
-  console.log(person);
-
+const Person = ({ person, onClick }) => {
   return (
     <div>
       {person.name} {person.number}
+      <button onClick={() => onClick(person)}>Delete</button>
     </div>
   );
 };
 
 const App = () => {
+  const removePerson = (person) => {
+    if (!confirm(`Are you sure you want to delete ${person.name} ?`)) return;
+    service.deletePerson(person.id).then(() => {
+      const newPersons = persons.filter((guy) => guy.name != person.name);
+      console.log(newPersons);
+
+      setPersons(newPersons);
+      setSearchPersons(newPersons);
+    });
+  };
+
   const addPerson = (event) => {
     event.preventDefault();
 
@@ -20,9 +30,12 @@ const App = () => {
       number: newNumber,
     };
     if (persons.map((person) => person.name).includes(person.name) === false) {
-      setPersons(persons.concat(person));
+      service.post(person).then((returnedNote) => {
+        setPersons(persons.concat(returnedNote));
+        setSearchPersons(persons.concat(returnedNote));
+      });
       setNewName("");
-      setNewNumber("");
+      setSearchPersons([]);
     } else {
       alert(`${person.name} already exists :(`);
     }
@@ -38,9 +51,7 @@ const App = () => {
 
   const handleSearchChange = (event) => {
     const txt = event.target.value.toLowerCase();
-    setSearchPersons(
-      persons.filter((person) => person.name.toLowerCase().startsWith(txt))
-    );
+    setSearchPersons(persons.filter((person) => person.name.toLowerCase().startsWith(txt)));
   };
 
   const [persons, setPersons] = useState([]);
@@ -49,10 +60,13 @@ const App = () => {
   const [newNumber, setNewNumber] = useState("");
 
   useEffect(() => {
-    axios.get("http://localhost:3001/persons").then((response) => {
-      setPersons(response.data);
-      setSearchPersons(response.data);
-      console.log(response.data);
+    console.log("USE EFFECT");
+
+    service.getAll().then((initialPersons) => {
+      console.log(initialPersons);
+
+      setPersons(initialPersons);
+      setSearchPersons(initialPersons);
     });
   }, []);
 
@@ -77,7 +91,7 @@ const App = () => {
       </form>
       <h2>Numbers</h2>
       {searchPersons.map((person) => (
-        <Person key={person.name} person={person} />
+        <Person key={person.id} person={person} onClick={removePerson} />
       ))}
     </div>
   );
