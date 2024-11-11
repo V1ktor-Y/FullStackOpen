@@ -1,12 +1,16 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 const Person = ({ person }) => {
+  console.log(person);
+
   return (
     <div>
       {person.name} {person.number}
     </div>
   );
 };
+
 const App = () => {
   const addPerson = (event) => {
     event.preventDefault();
@@ -39,10 +43,18 @@ const App = () => {
     );
   };
 
-  const [persons, setPersons] = useState([{ name: "Arto Hellas" }]);
-  const [searchPersons, setSearchPersons] = useState(persons);
+  const [persons, setPersons] = useState([]);
+  const [searchPersons, setSearchPersons] = useState([]);
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
+
+  useEffect(() => {
+    axios.get("http://localhost:3001/persons").then((response) => {
+      setPersons(response.data);
+      setSearchPersons(response.data);
+      console.log(response.data);
+    });
+  }, []);
 
   return (
     <div>
