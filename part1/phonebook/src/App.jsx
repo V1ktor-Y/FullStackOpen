@@ -15,7 +15,6 @@ const App = () => {
     if (!confirm(`Are you sure you want to delete ${person.name} ?`)) return;
     service.deletePerson(person.id).then(() => {
       const newPersons = persons.filter((guy) => guy.name != person.name);
-      console.log(newPersons);
 
       setPersons(newPersons);
       setSearchPersons(newPersons);
@@ -41,10 +40,7 @@ const App = () => {
       if (confirm(`${person.name} is already added to the phonebook, replace the old number with a new one?`)) {
         const personID = persons.find((guy) => guy.name === person.name).id;
         service.put(personID, person).then((returnedPerson) => {
-          console.log("THEN!!!");
-
           const newPersons = persons.map((guy) => (guy.name === person.name ? returnedPerson : guy));
-          console.log(newPersons);
 
           setPersons(newPersons);
           setNewName("");
@@ -76,11 +72,7 @@ const App = () => {
   const [newNumber, setNewNumber] = useState("");
 
   useEffect(() => {
-    console.log("USE EFFECT");
-
     service.getAll().then((initialPersons) => {
-      console.log(initialPersons);
-
       setPersons(initialPersons);
       setSearchPersons(initialPersons);
     });
