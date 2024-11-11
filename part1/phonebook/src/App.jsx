@@ -29,15 +29,31 @@ const App = () => {
       name: newName,
       number: newNumber,
     };
-    if (persons.map((person) => person.name).includes(person.name) === false) {
-      service.post(person).then((returnedNote) => {
-        setPersons(persons.concat(returnedNote));
-        setSearchPersons(persons.concat(returnedNote));
+    const personsMap = persons.map((person) => person.name, persons.number);
+    if (personsMap.includes(person.name) === false) {
+      service.post(person).then((returnedPerson) => {
+        setPersons(persons.concat(returnedPerson));
+        setSearchPersons(persons.concat(returnedPerson));
       });
       setNewName("");
-      setSearchPersons([]);
+      setNewNumber("");
+    } else if (persons.find((guy) => guy.name === person.name && guy.number !== person.number) !== -1) {
+      if (confirm(`${person.name} is already added to the phonebook, replace the old number with a new one?`)) {
+        const personID = persons.find((guy) => guy.name === person.name).id;
+        service.put(personID, person).then((returnedPerson) => {
+          console.log("THEN!!!");
+
+          const newPersons = persons.map((guy) => (guy.name === person.name ? returnedPerson : guy));
+          console.log(newPersons);
+
+          setPersons(newPersons);
+          setNewName("");
+          setNewNumber("");
+          setSearchPersons(newPersons);
+        });
+      }
     } else {
-      alert(`${person.name} already exists :(`);
+      alert(`${person.name} with the number ${person.number} already exists :(`);
     }
   };
 
